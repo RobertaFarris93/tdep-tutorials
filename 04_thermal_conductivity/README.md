@@ -12,7 +12,8 @@ Useful references on the topic:
 [D. A. Broido et al., Appl. Phys. Lett. 91, 231922 (2007)](https://pubs.aip.org/aip/apl/article-abstract/91/23/231922/334217/Intrinsic-lattice-thermal-conductivity-of?redirectedFrom=fulltext)
 
 # General scope
-In this tutorial we will learn how to calculate the lattice thermal conductivity from the iterative solution of the phonon Boltzmann equation.
+In this tutorial, you will learn how  to calculate the lattice thermal conductivity in the mode-coupling formalism, including collective and off-diagonal contributions up to fourth-order interactions.
+
 
 The tutorial covers:
 * the basic features included in the thermal conductivity routine of TDEP
@@ -20,6 +21,7 @@ The tutorial covers:
 * thermal conductivity for a given isotope distribution
 * thermal conductivity vs q-point grid
 * plot and analysis of the results
+* thermal conductivity including the four-phonon contributions to the scattering
 
 The tutorial **does not cover**:
 * Relax the structure
@@ -27,26 +29,35 @@ The tutorial **does not cover**:
 * Extract force constants
 
   
-There are two test cases: Al and MgO. 
-The data provided includes the IFCs and the unitcell obtained from previous DFT calculations. This data is not meant to produce converged results. 
+There are three test cases: 
+
+
+1. [Aluminium](#al)
+2. [MgO](#mgo)
+3. [Graphene](#graphene)
+
+
+
+
+The data provided includes the IFCs and the unitcell obtained from previous calculations. **This data is not meant to produce converged results.**
 
 # Before running the tutorial:
 * TDEP installed
 * [H5PY](https://docs.h5py.org/en/stable/) for Python installed
 * Access to a plotting tool (for example  [matplotlib](https://matplotlib.org/), if you are using Python)
-* Have a converged set of 2nd and 3rd order IFCs (you can use some previous examples or the data provided in this tutorial)
+* Have a converged set of IFCs (you can use some previous examples or the data provided in this tutorial)
 
 ## Input files:
-  `infile.ucposcar` 
-  
-  `infile.forceconstant` 
-  
-  `infile.forceconstant_thirdorder` 
-  
-  
+* [infile.ucposcar](https://tdep-developers.github.io/tdep/files/#infile.ucposcar)
+* [infile.forceconstant](https://tdep-developers.github.io/tdep/program/extract_forceconstants/#outfileforceconstant)
+* [infile.forceconstant_thirdorder](https://tdep-developers.github.io/tdep/program/extract_forceconstants/#outfileforceconstant_thirdorder)
+
 ## Optional input file:
-  `infile.isotopes` (for non-natural isotope distribution)
-  
+
+* [infile.isotopes](https://tdep-developers.github.io/tdep/files/#infile.isotopes)
+* [infile.forceconstant_fourthorder](https://tdep-developers.github.io/tdep/program/extract_forceconstants/#infile.forceconstant_fourthorder)
+
+ 
 You can create your customized isotope distribution specifying the number of isotopes per atom, followed by the appropriate number of concentrations and masses (in atomic mass units). An example is reported below:
 
 ```
@@ -74,6 +85,9 @@ Inspect the content of the folder:
 
 You can see some examples. 
 
+# Al
+
+
 Go in Examples/Al
 
 It contains the minimum input files needed for the thermal conductivity
@@ -89,101 +103,139 @@ If you run it using:
 mpirun thermal_conductivity > kappa.log
 ```
 
-you will be able to get *output _thermal_conductivity* which contains the components of the thermal conductivity tensor  $\kappa_{\alpha \beta}$  for each temperature.
+you will be able to get *output _thermal_conductivity* which contains the thermal conductivity tensor   $\kappa_{\alpha \beta}$ , with the decomposition from all contributions,  at a given temperature. This file can be parsed with tools such as numpy.
+
+It looks like this
 
 ```
-Row 	Description
-1 	T1 κxx κyy κzz κxz κyz κxy κzx κzy κyx
-2 	T2 κxx κyy κzz κxz κyz κxy κzx κzy κyx
+# Unit:               W/m/K
+# Temperature:          0.300000000000E+03
+# Single mode approximation
+#                      kxx                      kyy                      kzz                      kxy                      kxz                      kyz
+
+# Collective contribution
+#                      kxx                      kyy                      kzz                      kxy                      kxz                      kyz
+
+# Off diagonal (coherence) contribution
+#                      kxx                      kyy                      kzz                      kxy                      kxz                      kyz
+
+# Total thermal conductivity
+#                      kxx                      kyy                      kzz                      kxy                      kxz                      kyz
+
 
 ```
 
-As explained in the documentation, without specifying any optional flag, you will obtain the thermal conductivity for a natural isotope distribution, with a q-mesh of 26 26 26 (default value), for 5 different temperatures between 100K and 300K.
+As explained in the documentation, without specifying any optional flag, you will obtain the thermal conductivity for a natural isotope distribution, with a q-mesh of 26 26 26 (default value), at 300K.
 
 You can check the status of the calculation by looking at the file kappa.log printed
 ```
-... using 4 MPI ranks
+Initialize calculation
  ... read unitcell poscar
  ... read second order forceconstant
  ... read third order forceconstant
- ... getting the full dispersion relations
-  
-Counting scattering events and calculating integration weights
- ... adaptive gaussian smearing, scalingfactor=   1.0000000000000000     
-  ... counting scattering events         100.0% |========================================| 
- ... found  2.29% of threephonon events to be relevant,  0.37057E+08 +  0.34372E+08 events
- ... found 12.48% of isotope events to be relevant,   0.65007E+08 events
- ... calculating scatteringrates, remaining time: 00:05:45, estimated total time: 00:06:16  (8.1%)
- ... calculating scatteringrates, remaining time: 00:02:23, estimated total time: 00:04:24  (46.0%)
- ... calculating scatteringrates, remaining time: 00:00:38, estimated total time: 00:04:09  (85.1%)
- Counted and got scattering amplitudes in 240.77429
- 
- THERMAL CONDUCTIVITY
- 
- Temperature: 100.00000
- iter         kxx            kyy            kzz            kxy            kxz            kyz       DeltaF/F
-    0        54.0887        54.0887        54.0887         0.0000         0.0000         0.0000
-    1        61.6716        61.6716        61.6716         0.0000         0.0000         0.0000   0.463E+01
-    2        67.2627        67.2627        67.2627         0.0000         0.0000         0.0000   0.613E-01
-    3        69.3412        69.3412        69.3412         0.0000         0.0000         0.0000   0.240E-01
-    4        70.6782        70.6782        70.6782         0.0000         0.0000         0.0000   0.277E-02
-    5        71.2635        71.2635        71.2635         0.0000         0.0000         0.0000   0.187E-02
-    6        71.6217        71.6217        71.6217         0.0000         0.0000         0.0000   0.775E-03
-    7        71.7914        71.7914        71.7914         0.0000         0.0000         0.0000   0.102E-03
-    8        71.8916        71.8916        71.8916         0.0000         0.0000         0.0000   0.528E-04
-    9        71.9413        71.9413        71.9413         0.0000         0.0000         0.0000   0.152E-04
-   10        71.9699        71.9699        71.9699         0.0000         0.0000         0.0000   0.308E-05
-   11        71.9845        71.9845        71.9845         0.0000         0.0000         0.0000   0.105E-05
-             71.9928        71.9928        71.9928         0.0000         0.0000         0.0000
+ ... generating q-point mesh
+ ... generating harmonic properties on the q-point mesh
+ ... done in        0.291 s
 
- 
- Temperature: 200.00000
+ Calculating scattering events
+ ... walltime() used to generate random state
+ ... creating Monte-Carlo grid
+ ... distributing q-point/modes on MPI ranks
+ ... everything is ready, starting scattering computation
+  ... computing scattering amplitude     100.0% |========================================|  105.56641s
+ ... symmetrizing scattering matrix
+ ... done in      120.580 s
+
+ Thermal conductivity calculation
+ ... computing kappa in the single mode approximation
+ ... computing off diagonal (coherence) contribution
+ ... solving iteratively the collective contribution
  iter         kxx            kyy            kzz            kxy            kxz            kyz       DeltaF/F
-    0        26.9798        26.9798        26.9798         0.0000         0.0000         0.0000
-    1        30.9707        30.9707        30.9707         0.0000         0.0000         0.0000   0.144E+01
-    2        33.5624        33.5624        33.5624         0.0000         0.0000         0.0000   0.464E-01
-    3        34.5355        34.5355        34.5355         0.0000         0.0000         0.0000   0.296E-01
-    4        35.1090        35.1090        35.1090         0.0000         0.0000         0.0000   0.231E-02
-    5        35.3569        35.3569        35.3569         0.0000         0.0000         0.0000   0.110E-02
-    6        35.5003        35.5003        35.5003         0.0000         0.0000         0.0000   0.214E-03
-    7        35.5665        35.5665        35.5665         0.0000         0.0000         0.0000   0.650E-04
-    8        35.6041        35.6041        35.6041         0.0000         0.0000         0.0000   0.125E-04
-    9        35.6221        35.6221        35.6221         0.0000         0.0000         0.0000   0.462E-05
-   10        35.6322        35.6322        35.6322         0.0000         0.0000         0.0000   0.996E-06
-             35.6372        35.6372        35.6372         0.0000         0.0000         0.0000
- 
- Temperature: 300.00000
- iter         kxx            kyy            kzz            kxy            kxz            kyz       DeltaF/F
-    0        18.2872        18.2872        18.2872         0.0000         0.0000         0.0000
-    1        21.0233        21.0233        21.0233         0.0000         0.0000         0.0000   0.113E+01
-    2        22.7525        22.7525        22.7525         0.0000         0.0000         0.0000   0.485E-01
-    3        23.4036        23.4036        23.4036         0.0000         0.0000         0.0000   0.269E-01
-    4        23.7802        23.7802        23.7802         0.0000         0.0000         0.0000   0.230E-02
-    5        23.9428        23.9428        23.9428         0.0000         0.0000         0.0000   0.109E-02
-    6        24.0357        24.0357        24.0357         0.0000         0.0000         0.0000   0.167E-03
-    7        24.0785        24.0785        24.0785         0.0000         0.0000         0.0000   0.710E-04
-    8        24.1026        24.1026        24.1026         0.0000         0.0000         0.0000   0.134E-04
-    9        24.1141        24.1141        24.1141         0.0000         0.0000         0.0000   0.517E-05
-   10        24.1205        24.1205        24.1205         0.0000         0.0000         0.0000   0.108E-05
-             24.1236        24.1236        24.1236         0.0000         0.0000         0.0000
-  
- Timings:
-            initialization:       1.449 s,   0.289%
-       integration weights:     106.087 s,  21.175%
-           matrix elements:     240.774 s,  48.058%
-            QS calculation:      58.925 s,  11.761%
-                     kappa:       0.000 s,   0.000%
-          self consistency:      79.013 s,  15.771%
-          cumulative plots:      14.494 s,   2.893%
-                     total:     501.006 seconds
+    0        16.6454        16.6454        16.6454         0.0000         0.0000         0.0000
+    1        19.2847        19.2847        19.2847         0.0000         0.0000         0.0000   1.143E+00
+    2        20.8637        20.8637        20.8637         0.0000         0.0000         0.0000   3.357E+00
+    3        21.4629        21.4629        21.4629         0.0000         0.0000         0.0000   5.783E-02
+    4        21.7904        21.7904        21.7904         0.0000         0.0000         0.0000   5.922E-03
+    5        21.9321        21.9321        21.9321         0.0000         0.0000         0.0000   6.913E-03
+    6        22.0077        22.0077        22.0077         0.0000         0.0000         0.0000   6.154E-04
+    7        22.0425        22.0425        22.0425         0.0000         0.0000         0.0000   1.642E-04
+    8        22.0607        22.0607        22.0607         0.0000         0.0000         0.0000   2.955E-05
+    9        22.0694        22.0694        22.0694         0.0000         0.0000         0.0000   1.140E-05
+   10        22.0738        22.0738        22.0738         0.0000         0.0000         0.0000   2.358E-06
+   11        22.0760        22.0760        22.0760         0.0000         0.0000         0.0000   7.698E-07
+   12        22.0771        22.0771        22.0771         0.0000         0.0000         0.0000   1.646E-07
+ ... done in        0.645 s
+
+
+... symmetrizing the thermal conductivity tensors
+
+ Decomposition of the thermal conductivity (in W/m/K)
+ Single mode approximation (SMA)
+              kxx            kyy            kzz            kxy            kxz            kyz
+             16.6454        16.6454        16.6454         0.0000         0.0000         0.0000
+ Correction to include collective contribution via iterative procedure
+              kxx            kyy            kzz            kxy            kxz            kyz
+              5.4317         5.4317         5.4317         0.0000         0.0000         0.0000
+ Off diagonal (coherence) contribution
+              kxx            kyy            kzz            kxy            kxz            kyz
+              0.0236         0.0236         0.0236         0.0000         0.0000         0.0000
+ Total thermal conductivity
+              kxx            kyy            kzz            kxy            kxz            kyz
+             22.1007        22.1007        22.1007         0.0000         0.0000         0.0000
+
+ ... computing cumulative kappa
+ ... estimating kappa with boundary
+ ... computing density of state
+ ... computing spectral kappa
+ ... computing angular momentum
+
+ ... dumping auxiliary data to files
+
+Scattering rates can be found in                                outfile.thermal_conductivity_grid.hdf5
+Thermal conductivity tensor can be found in                     outfile.thermal_conductivity
+Cumulative and spectral thermal conductivity can be found in    outfile.cumulative_thermal_conductivity.hdf5
+
 
 
 ```
-The first step (iter 0) represents the RTA solution. The last step is the converged iterative solution. For reference, take a look at the documentation about the [thermal conductivity](https://tdep-developers.github.io/tdep/program/thermal_conductivity/).
+The first step (iter 0) represents the RTA solution. The second is the converged iterative solution within the given tolerance (default value 1e-5 Tolerance for the iterative solution). The third value accounts for the coherence contribution. The last one is the total thermal conductivity given by the sum of the previous ones.
+For reference, take a look at the documentation about the [thermal conductivity](https://tdep-developers.github.io/tdep/program/thermal_conductivity/).
 
-plot the results with 
+
+Repeat the run for several temperature, and plot the results. Here an example of script you can use to automate the process:
 ```
-gnuplot outfile.thermal_conductivity.gnuplot -persist
+#!/bin/bash
+
+# Define the range of temperatures
+temperatures=(100 200 300 400 500)  # Replace these with the actual temperatures you want
+
+# Create the combined output file
+> combined_kappa.kappa
+
+# Row counter
+row=1
+
+for temp in "${temperatures[@]}"; do
+  echo "Running thermal_conductivity at temperature $temp..."
+  mpirun thermal_conductivity -qg 8 8 8 --temperature $temp
+
+  mv outfile.thermal_conductivity "output_${temp}.kappa"
+  thermal_data=$(awk '/^# Total thermal conductivity/ {getline; print; getline; print}' "output_${temp}.kappa")
+
+  thermal_data=$(echo "$thermal_data" | sed '/^#/d' | sed 's/^[ \t]*//;s/[ \t]*$//')
+
+  echo "$row     $temp   $thermal_data" >> combined_kappa.kappa
+
+  ((row++))
+done
+
+echo "All runs completed. Relevant outputs with temperatures appended to combined_kappa.kappa."
+```
+
+plot the results with gnuplot
+```
+gnuplot
+p 'combined_kappa.kappa' u 2:3 w l
 ```
 and study the plot. 
 
@@ -195,16 +247,6 @@ and study the plot.
 * Are the values comparable with the literature ([thermal conductivity of pure aluminum is estimated to be in the range between 220 and 250 (W/mK)](https://thermtest.com/thermal-resources/materials-database))? Why?
 
 Get familiar with the optional flags available for thermal conductivity.
-You may decide to compute the thermal conductivity for a given temperature. 
-
-```
-mpirun thermal_conductivity --temperature 300
-```
-or for a given range 
-```
-mpirun thermal_conductivity --temperature_range 100 500 50
-```
-where you can specify the minimum, the maximum and the number of points. 
 
 
 ## Study the convergence 
@@ -222,7 +264,11 @@ For more details, see [Esfarjani, K. et. al., Phys. Rev. B 84, 085204 (2011)](ht
 
 ![Here the convergence test for thermal conductivity of aluminum](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/Al_convergence.png)
 
+
+# MgO
+
 ### Thermal conductivity of MgO
+
 
 Now you should be familiar with the thermal_conductivity routine. 
 So far you learnt how to run the calculations for different grids of q-points and different ranges of temperatures. 
@@ -252,7 +298,7 @@ By default, TDEP uses the isotope natural distribution.(tabulated in the code, t
 Now repeat the calculation in a different folder with for the case of pure MgO by using:
 
 ```
-mpirun thermal_conductivity -qg 10 10 10 --temperature 300 --noisotope
+mpirun thermal_conductivity -qg 10 10 10 --noisotope
 
 ```
 
@@ -282,8 +328,19 @@ done
 ```
 ![Fit the k_xx against 1/qx and extrapolate the value for qx=0](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/MgO_convergence.png). 
 
-In order to reach convergence, you will need access to a cluster/HPC. 
+**In order to reach convergence, you will need access to a cluster/HPC. **
 
+
+#### qg3ph MC grid: speed-up the calculations
+
+You may have notice that TDEP offers the possibility to select Density of q-point mesh for Brillouin zone integration and the dimension of the grid for the threephonon integration through the flag **--qpoint_grid3ph value#1 value#2 value#3**, **-qg3ph value#1 value#2 value#3**.
+For more details, have a look at the manual: [Monte Carlo integration for the scattering rates](https://tdep-developers.github.io/tdep/program/thermal_conductivity/#monte-carlo-integration-for-the-scattering-rates)
+
+The idea is, we generate a full grid, on which the thermal conductivity will be integrated. A subset of this full grid can then be selected to perform the scattering integration. In order to improve the convergence, these point are not selected entirely at random but using a stratified approached in order to sample more uniformly the Brillouin zone.
+
+Converging the grids is an important step to ensure accurate results. Since the convergence of the Monte-Carlo grids are not related to the convergence of the full grid, their determination can be done independently. To reduce the computational cost of the convergence, an approach is to fix the full grid to a moderately large density, and converge the third order grid. Once the Monte-Carlo grid densities are known, then the full grid density can be determined.
+
+What is a good value for qg3ph?
 
 # Post-processing options
 So far we see how to extract the thermal conductivity tensor using TDEP routine.  Let's have a look at the other output files in may find in the working directory. In case your calculations are not finished yet, you can use the output file provided in the MgO directory, using a q-grid of 28x28x28 points and using a temperature of 300K. 
@@ -403,7 +460,7 @@ To do so, with the data provided in the folder ``convergence_tests/input_MgO/```
     * perform a self-consistent loop as described in [Tutorial 1](https://github.com/tdep-developers/tdep-tutorials/tree/main/01_sampling) for MgO for 10 iterations
     * compute thermal conductivity at each step:
           ```
-          mpirun thermal_conductivity -qg 8 8 8 --temperature 300
+          mpirun thermal_conductivity -qg 8 8 8
           ```
     * study the convergence
       
@@ -425,6 +482,8 @@ Repeat the same steps, but this time keep fixed rc2 and change rc3.
 mpirun extract_forceconstants  -rc2 8 -rc3 4
 ```
 
+
+
 **How the thermal conductivity changes with the 3rd order IFCs cutoff?**
 
 # Next steps
@@ -437,6 +496,25 @@ You may now use your own structure to calculate the thermal conductivity.
 Copy your primitive structure and the forceconstants in your work folder and repeat the previous steps.
 
 Alternatively, you will find the needed input files for Si, that will be used as example in the next tutorial. 
+
+
+# 2D materials
+# Graphene
+
+So far we focused on bulk structures, and explore the capabilities of the thermal conductivity routine in TDEP. When it comes to 2D materials, we need to include the 4-phonon scattering contribution, to determine the correct thermal conductivity. 
+We provide an example for graphene, with the needed IFCs. 
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
