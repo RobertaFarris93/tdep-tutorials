@@ -351,13 +351,13 @@ Compare the outputs.
 The isotope scattering is known to decrease the thermal conductivity of MgO by 30%-40% at 300K. Did you observe that? For reference, see [Florian Knoop et.al, PRB 107, 224304 (2023)](https://journals.aps.org/prb/pdf/10.1103/PhysRevB.107.224304). 
 
 
-![MgO: comparison betweeen natural isotope distribution and pure cases](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/MgO_isotope.png)
+![MgO: comparison betweeen natural isotope distribution and pure cases](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/MgO_T.png)
 
 
 #### Extrapolation for an infinite grid of q-points
 
 Compute the thermal conductivity using different grids, as in the previous example. 
-![Fit the k_xx against 1/qx and extrapolate the value for qx=0](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/MgO_convergence.png). 
+![Fit the k_xx against 1/qx and extrapolate the value for qx=0](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/MgO_convergence_q-points.png). 
 
 **In order to reach convergence, you may need access to a cluster/HPC.**
 
@@ -371,7 +371,7 @@ The idea is, we generate a full grid, on which the thermal conductivity will be 
 
 Converging the grids is an important step to ensure accurate results. Since the convergence of the Monte-Carlo grids is not related to the convergence of the full grid, their determination can be done independently. To reduce the computational cost of the convergence, an approach is to fix the full grid to a moderately large density, and converge the third-order grid. Once the Monte-Carlo grid densities are known, then the full grid density can be determined.
 
-What is a good value for qg3ph?
+![What is a good value for qg3ph?](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/MgO_convergence_qg3ph.png). 
 
 # Post-processing options
 So far we see how to extract the thermal conductivity tensor using TDEP routine.  Let's have a look at the other output files in may find in the working directory. In case your calculations are not finished yet, you can use the output file provided in the MgO directory, using a q-grid of 28x28x28 points and using a temperature of 300K. 
