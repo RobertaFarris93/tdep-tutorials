@@ -376,19 +376,18 @@ Converging the grids is an important step to ensure accurate results. Since the 
 # Post-processing options
 So far we see how to extract the thermal conductivity tensor using TDEP routine.  Let's have a look at the other output files in may find in the working directory. In case your calculations are not finished yet, you can use the output file provided in the MgO directory, using a q-grid of 28x28x28 points and using a temperature of 300K. 
 
-*outfile.cumulative_kappa.hdf5*
+*outfile.cumulative_thermal_conductivity.hdf5*
 
 The file contains the information on the cumulative thermal conductivity plots described in the manual, per each computed temperature. You can inspect the information contained in the file using the following minimal Python script:
 ```
-import numpy
-import matplotlib.pyplot as plt
 import h5py
-fn = h5py.File('outfile.cumulative_kappa.hdf5', 'r')
-print(fn['temperature_1'].keys())
+fn = h5py.File('outfile.cumulative_thermal_conductivity.hdf5', 'r')
+print("what's inside:", list(fn.keys()))
+fn.close()
 ```
 
 ```
-<KeysViewHDF5 ['angular_momentum_tensor', 'boundary_scattering_kappa', 'boundary_scattering_lengths', 'cumulative_kappa_vs_mean_free_path_per_atom', 'cumulative_kappa_vs_mean_free_path_per_mode', 'cumulative_kappa_vs_mean_free_path_per_species', 'cumulative_kappa_vs_mean_free_path_total', 'frequency_axis', 'mean_free_path_axis', 'spectral_angmom_vs_frequency_per_direction', 'spectral_kappa_vs_frequency_per_atom', 'spectral_kappa_vs_frequency_per_direction', 'spectral_kappa_vs_frequency_per_mode', 'spectral_kappa_vs_frequency_per_species', 'spectral_kappa_vs_frequency_total']>
+['boundary_scattering_kappa', 'boundary_scattering_lengths', 'cumulative_kappa_vs_mean_free_path', 'cumulative_kappa_vs_mean_free_path_per_atom', 'cumulative_kappa_vs_mean_free_path_per_mode', 'dos', 'frequencies', 'generating_angular_momentum_tensor', 'generating_angular_momentum_tensor_vs_frequency', 'mean_free_path_axis', 'spectral_kappa_vs_frequency', 'spectral_kappa_vs_frequency_per_atom', 'spectral_kappa_vs_frequency_per_mode']
 ```
 
 ##### 1. Cumulative thermal conductivity vs mean free path
@@ -414,7 +413,6 @@ import numpy
 import matplotlib.pyplot as plt
 import h5py
 
-#customized parameters
 params = {'legend.fontsize': 20,
           'figure.figsize': (15, 5),
          'axes.labelsize': 30,
@@ -423,24 +421,28 @@ params = {'legend.fontsize': 20,
          'ytick.labelsize':20}
 plt.rcParams.update(params)
 
+# Open the HDF5 file in read mode
+fn = h5py.File('outfile.cumulative_thermal_conductivity.hdf5', 'r')
 
-fn = h5py.File('outfile.cumulative_kappa.hdf5', 'r')
-#plot the spectral thermal conductivity as a function of frequency
-plt.plot(fn['frequencies'][:], fn['temperature_1']['spectral_kappa_vs_frequency_total'][:], lw = 4)
+
+#plot one component of the spectral thermal conductivity as a function of frequency
+plt.plot(fn['frequencies'][:], fn['spectral_kappa_vs_frequency'][0, 0, :], lw = 4)
 #add labels, titles etc.
 plt.title('Spectral thermal conductivity of MgO')
 plt.xlabel('Frequency [THz]')
 plt.ylabel(r'$\kappa$ [W/K/m/THz]')
+plt.tight_layout()
 plt.savefig('Spectral_thermal_conductivity_MgO.png')
 plt.show()
 #plot the cumulative thermal conductivity as a function of the total mean free path
-plt.semilogx(fn['temperature_1']['mean_free_path_axis'][:], 
-             fn['temperature_1']['cumulative_kappa_vs_mean_free_path_total'][:], lw = 4)
+plt.semilogx(fn['mean_free_path_axis'][:], 
+             fn['cumulative_kappa_vs_mean_free_path'][0, 0, :], lw = 4)
 #add labels, titles etc.
 plt.title('Cumulative kappa vs mean free path of MgO')
 plt.xlabel('Mean Free Path [m]')
 plt.ylabel(r'$\kappa$ [W/K/m]')
 plt.xlim(1E-9,1E-5)
+plt.tight_layout()
 plt.savefig('thermal_conductivity_vs_mfp_MgO.png')
 ```
 The script should give you the plots reported below. 
