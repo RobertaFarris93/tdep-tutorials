@@ -5,11 +5,16 @@ Useful references on the topic:
 
 [R.E. Peierls, Quantum Theory of Solids (1955)](https://books.google.es/books?id=WvPcBUsSJBAC&redir_esc=y)
 
-
 [M. Omini and A. Sparavigna Phys. Rev. B 53, 9064 (1996)](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.53.9064)
 
-
 [D. A. Broido et al., Appl. Phys. Lett. 91, 231922 (2007)](https://pubs.aip.org/aip/apl/article-abstract/91/23/231922/334217/Intrinsic-lattice-thermal-conductivity-of?redirectedFrom=fulltext)
+
+[O. Hellman and D.A. Broido, Phys. Rev. B 90, 134309 (2014)](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.90.134309)
+
+[A. Castellano et al., Phys. Rev. B 111, 094306 (2025)](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.111.094306)
+
+[J. Klarbring et al., Phys Rev Lett 125, 045701 (2020)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.125.045701)
+
 
 # General scope
 In this tutorial, you will learn how  to calculate the lattice thermal conductivity in the mode-coupling formalism, including collective and off-diagonal contributions up to fourth-order interactions.
@@ -57,17 +62,6 @@ The data provided includes the IFCs and the unitcell obtained from previous calc
 * [infile.isotopes](https://tdep-developers.github.io/tdep/files/#infile.isotopes)
 * [infile.forceconstant_fourthorder](https://tdep-developers.github.io/tdep/program/extract_forceconstants/#infile.forceconstant_fourthorder)
 
- 
-You can create your customized isotope distribution specifying the number of isotopes per atom, followed by the appropriate number of concentrations and masses (in atomic mass units). An example is reported below:
-
-```
-1         # number of isotopes for first atom in infile.ucposcar
-1 28.0855 # concentration, mass, one line per isotope
-2         # number of isotopes for second atom
-0.5 12.0  # concentration, mass
-0.5 13.0  # concentration, mass
-...
-```
 
 # Basic steps
 
@@ -202,7 +196,7 @@ The first step (iter 0) represents the RTA solution. The second is the converged
 For reference, take a look at the documentation about the [thermal conductivity](https://tdep-developers.github.io/tdep/program/thermal_conductivity/).
 
 
-Repeat the run for several temperature, and plot the results. Here an example of script you can use to automate the process:
+Repeat the run for several temperatures, and plot the results. Here an example of scripts you can use to automate the process:
 ```
 #!/bin/bash
 
@@ -239,7 +233,7 @@ p 'combined_kappa.kappa' u 2:3 w l
 ```
 and study the plot. 
 
-![here you can see how the plot should look like](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/Al_kappa.png)
+![here you can see how the plot should look like](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/Al_kappa_T.png)
 
 ## Understand the results
 
@@ -258,12 +252,63 @@ Get familiar with the optional flags available for thermal conductivity.
 
 What is a good grid for the thermal conductivity of Al? 
 
-The calculation of thermal conductivity, being a integrated quantity, requires its evaluation under the assumption of an infinitely refined q-point grid. Unfortunately, this is impossible from a computational point of view, but using progressively finer grids, the behavior of thermal conductivity should scale linearly with q. Thus, in order to converge the thermal conductivity value, we could perform the calculation for a set of q-grids and then evaluating then studing the convergence by plotting the thermal conductivity against 1/q and extrapolating the value for 1/q at 0.  The point of intersection on the y-axis resulting from this regression corresponds to the thermal conductivity within the hypothetical context of an infinitely dense q-point grid. 
+The calculation of thermal conductivity, being a integrated quantity, requires its evaluation under the assumption of an infinitely refined q-point grid. Unfortunately, this is impossible from a computational point of view, but using progressively finer grids, the behavior of thermal conductivity should scale linearly with q. Thus, in order to converge the thermal conductivity value, we could perform the calculation for a set of q-grids and then study the convergence by plotting the thermal conductivity against 1/q and extrapolating the value for 1/q at 0.  The point of intersection on the y-axis resulting from this regression corresponds to the thermal conductivity within the hypothetical context of an infinitely dense q-point grid. 
 For more details, see [Esfarjani, K. et. al., Phys. Rev. B 84, 085204 (2011)](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.84.085204).
 
 
-![Here the convergence test for thermal conductivity of aluminum](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/Al_convergence.png)
+![Here the convergence test for thermal conductivity of aluminum](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/Al_convergence_q-points.png)
 
+This is a python script you can customize and use for that purpose:
+```
+import numpy as np
+import matplotlib.pyplot as plt
+from numpy.polynomial.polynomial import Polynomial
+
+q = []
+kappa = []
+
+# Open and read the file line by line
+with open("combined_kappa.q-points", "r") as f:
+    for line in f:
+        parts = line.strip().split()
+        if len(parts) < 3:
+            continue  # skip lines that are too short
+        try:
+            q_val = float(parts[1])
+            kappa_val = float(parts[2])
+            q.append(q_val)
+            kappa.append(kappa_val)
+        except ValueError:
+            continue  # skip lines with non-numeric data
+
+q = np.array(q)
+kappa = np.array(kappa)
+inv_q = 1.0 / q
+
+# Linear fit
+fit = Polynomial.fit(inv_q, kappa, deg=1)
+kappa_inf = fit(0)
+
+print(f"Extrapolated thermal conductivity at 1/q = 0 (infinite q): {kappa_inf:.6f} W/m·K")
+
+# Plot
+x_range = np.linspace(0, max(inv_q)*1.1, 100)
+y_fit = fit(x_range)
+
+plt.plot(inv_q, kappa, 'o', label='Data')
+plt.plot(x_range, y_fit, '-', label='Linear Fit')
+plt.axvline(0, color='gray', linestyle='--')
+plt.axhline(kappa_inf, color='red', linestyle='--', label=f'Extrapolated: {kappa_inf:.3f}')
+plt.xlabel('1 / q-points')
+plt.ylabel('Thermal Conductivity (W/m·K)')
+plt.title('Extrapolation to Infinite q-points')
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.savefig("Al_convergence_q-points.png")
+plt.show()
+
+```
 
 # MgO
 
@@ -281,7 +326,7 @@ Create a folder and copy all the input files there.
 Perform the calculation using:
 
 ```
-mpirun thermal_conductivity -qg 10 10 10 --temperature 300
+mpirun thermal_conductivity -qg 12 12 12 
 
 ```
 
@@ -298,7 +343,7 @@ By default, TDEP uses the isotope natural distribution.(tabulated in the code, t
 Now repeat the calculation in a different folder with for the case of pure MgO by using:
 
 ```
-mpirun thermal_conductivity -qg 10 10 10 --noisotope
+mpirun thermal_conductivity -qg 12 12 12 --noisotope
 
 ```
 
@@ -311,24 +356,10 @@ The isotope scattering is known to decrease the thermal conductivity of MgO by 3
 
 #### Extrapolation for an infinite grid of q-points
 
-Compute the thermal conductivity using different grids. For doing that, you can use a very simple script like the example reported here:
-
-
-```
-#!/bin/sh
-for i in {4..28..4};
-do
-        mkdir q_$i
-        cp infile* q_$i
-        cd q_$i
-        mpirun thermal_conductivity -qg $i $i $i --temperature 300
-        cd ..
-done
-
-```
+Compute the thermal conductivity using different grids, as in the previous example. 
 ![Fit the k_xx against 1/qx and extrapolate the value for qx=0](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/MgO_convergence.png). 
 
-**In order to reach convergence, you will need access to a cluster/HPC. **
+**In order to reach convergence, you may need access to a cluster/HPC.**
 
 
 #### qg3ph MC grid: speed-up the calculations
@@ -336,9 +367,9 @@ done
 You may have notice that TDEP offers the possibility to select Density of q-point mesh for Brillouin zone integration and the dimension of the grid for the threephonon integration through the flag **--qpoint_grid3ph value#1 value#2 value#3**, **-qg3ph value#1 value#2 value#3**.
 For more details, have a look at the manual: [Monte Carlo integration for the scattering rates](https://tdep-developers.github.io/tdep/program/thermal_conductivity/#monte-carlo-integration-for-the-scattering-rates)
 
-The idea is, we generate a full grid, on which the thermal conductivity will be integrated. A subset of this full grid can then be selected to perform the scattering integration. In order to improve the convergence, these point are not selected entirely at random but using a stratified approached in order to sample more uniformly the Brillouin zone.
+The idea is, we generate a full grid, on which the thermal conductivity will be integrated. A subset of this full grid can then be selected to perform the scattering integration. In order to improve the convergence, these points are not selected entirely at random but using a stratified approach to sample more uniformly the Brillouin zone.
 
-Converging the grids is an important step to ensure accurate results. Since the convergence of the Monte-Carlo grids are not related to the convergence of the full grid, their determination can be done independently. To reduce the computational cost of the convergence, an approach is to fix the full grid to a moderately large density, and converge the third order grid. Once the Monte-Carlo grid densities are known, then the full grid density can be determined.
+Converging the grids is an important step to ensure accurate results. Since the convergence of the Monte-Carlo grids is not related to the convergence of the full grid, their determination can be done independently. To reduce the computational cost of the convergence, an approach is to fix the full grid to a moderately large density, and converge the third-order grid. Once the Monte-Carlo grid densities are known, then the full grid density can be determined.
 
 What is a good value for qg3ph?
 
