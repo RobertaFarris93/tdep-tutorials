@@ -405,6 +405,9 @@ which is a measure which frequencies contribute most to thermal transport.
 ```math
 \kappa_{\alpha\beta}(\omega)=\frac{1}{V} \sum_{\lambda}C_{\lambda} v^{\alpha}_{\lambda} v^{\beta}_{\lambda} \tau_{\lambda} \delta(\omega- \omega_{\lambda})
 ```
+
+Note that all quantities do not include the off-diagonal coherence contribution.
+
 #### Read and analyze the output
 Let's analyze the output file with the following script
 
@@ -505,16 +508,19 @@ To do so, with the data provided in the folder ``convergence_tests/input_MgO/```
 
 In the data provided, you will find a directory named ```convergence_tests/input_MgO```.
 
-Inspect the folder. It contains the tdep input files needed for fitting the forceconstant and calculated the related properties. 
+Inspect the folder. It contains the necessary TDEP input files required for fitting the force constants and calculating related properties.
 
-In Tutorial 01, you learnt how to increase your force constants cutoff (rc2) and observe how the phonon dispersion changes. 
+In Tutorial 01, you learned how to increase the second-order force constant cutoff (**rc2**) and observe how the phonon dispersion changes.
 
-Repeat the same steps, but this time keep fixed rc2 and change rc3. 
+Now, repeat the same steps, but this time keep rc2 fixed and change rc3, the cutoff for third-order force constants.
+
+To get started, use the following command:
 
 ```
 mpirun extract_forceconstants  -rc2 8 -rc3 4
 ```
 
+Explore how changing rc3 influences the results and assess the convergence of the thermal conductivity or other properties of interest.
 
 
 **How the thermal conductivity changes with the 3rd order IFCs cutoff?**
@@ -524,27 +530,31 @@ mpirun extract_forceconstants  -rc2 8 -rc3 4
 
 # Use your material of interest
 
-You may now use your own structure to calculate the thermal conductivity. 
+You can now use your own structure to calculate the thermal conductivity.
 
-Copy your primitive structure and the forceconstants in your work folder and repeat the previous steps.
+Copy your primitive structure and the force constants into your working folder, and repeat the previous steps.
 
-Alternatively, you will find the needed input files for Si, that will be used as example in the next tutorial. 
+Alternatively, you can use the provided input files for silicon (Si), which will be used as an example in the next tutorial.
 
-
-# 2D materials
 # Graphene
 
-So far we focused on bulk structures, and explored the capabilities of the thermal conductivity routine in TDEP. When it comes to 2D materials, we need to include the 4-phonon scattering contribution, to determine the correct value for the thermal conductivity. 
-We provide an example for graphene, with the needed IFCs. 
+So far, we have focused on bulk materials and explored the capabilities of the thermal conductivity routine in **TDEP**.  
+For **two-dimensional materials**, such as **graphene**, it is essential to include the **four-phonon scattering contribution** to obtain accurate thermal conductivity values.
 
+We provide an example for graphene, including the necessary **interatomic force constants (IFCs)**.
 
-Perform a calculation including the 4-phonon scattering contribution (with the flag --fourthorder) , and compare with the case without including it. 
+Perform a calculation including the four-phonon scattering contribution using the `--fourthorder` flag, and compare the results to a calculation **without** this contribution:
 
-Are the two results similar? 
-
+```bash
+mpirun thermal_conductivity -qg 8 8 1 --fourthorder
 ```
-  mpirun thermal_conductivity -qg 8 8 1 --fourthorder
-```
+
+*Are the results similar?*
+
+**Note**: Graphene is a two-dimensional material, so the thermal conductivity must be corrected to account for its effective thickness.  
+ The results should be multiplied by a factor of **15.0 / 3.335**.
+
+
 Below what you should have obtained, as a function of T
 
 ![Here an example of the thermal conductivity convergence.](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/Graphene_kappa_vs_temp_4ph.png)
