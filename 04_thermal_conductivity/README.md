@@ -534,18 +534,21 @@ Alternatively, you will find the needed input files for Si, that will be used as
 # 2D materials
 # Graphene
 
-So far we focused on bulk structures, and explore the capabilities of the thermal conductivity routine in TDEP. When it comes to 2D materials, we need to include the 4-phonon scattering contribution, to determine the correct thermal conductivity. 
+So far we focused on bulk structures, and explored the capabilities of the thermal conductivity routine in TDEP. When it comes to 2D materials, we need to include the 4-phonon scattering contribution, to determine the correct value for the thermal conductivity. 
 We provide an example for graphene, with the needed IFCs. 
 
 
+Perform a calculation including the 4-phonon scattering contribution (with the flag --fourthorder) , and compare with the case without including it. 
 
+Are the two results similar? 
 
+```
+  mpirun thermal_conductivity -qg 8 8 1 --fourthorder
+```
+Below what you should have obtained, as a function of T
 
-
-
-
-
-
+![Here an example of the thermal conductivity convergence.](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/MgO_SC.png)
+![Here an example of the thermal conductivity convergence.](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/MgO_SC.png)
 
 
 
