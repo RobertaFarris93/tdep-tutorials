@@ -252,7 +252,7 @@ Get familiar with the optional flags available for thermal conductivity.
 
 What is a good grid for the thermal conductivity of Al? 
 
-The calculation of thermal conductivity, being a integrated quantity, requires its evaluation under the assumption of an infinitely refined q-point grid. Unfortunately, this is impossible from a computational point of view, but using progressively finer grids, the behavior of thermal conductivity should scale linearly with q. Thus, in order to converge the thermal conductivity value, we could perform the calculation for a set of q-grids and then study the convergence by plotting the thermal conductivity against 1/q and extrapolating the value for 1/q at 0.  The point of intersection on the y-axis resulting from this regression corresponds to the thermal conductivity within the hypothetical context of an infinitely dense q-point grid. 
+The calculation of thermal conductivity, being an integrated quantity, requires its evaluation under the assumption of an infinitely refined q-point grid. Unfortunately, this is impossible from a computational point of view, but using progressively finer grids, the behavior of thermal conductivity should scale linearly with q. Thus, in order to converge the thermal conductivity value, we could perform the calculation for a set of q-grids and then study the convergence by plotting the thermal conductivity against 1/q and extrapolating the value for 1/q at 0.  The point of intersection on the y-axis resulting from this regression corresponds to the thermal conductivity within the hypothetical context of an infinitely dense q-point grid. 
 For more details, see [Esfarjani, K. et. al., Phys. Rev. B 84, 085204 (2011)](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.84.085204).
 
 
@@ -314,16 +314,14 @@ plt.show()
 
 ### Thermal conductivity of MgO
 
+Now, you should be familiar with the thermal_conductivity routine. So far, you’ve learned how to run calculations for different grids of q-points and various temperature ranges.
+Let’s now explore the available output information you can extract from TDEP.
 
-Now you should be familiar with the thermal_conductivity routine. 
-So far you learnt how to run the calculations for different grids of q-points and different ranges of temperatures. 
-Let's now see what are the available output information you can extract from TDEP.
+We will analyze the thermal conductivity of a well-known semiconductor.
+Go to the Examples/MgO directory.
 
-We analyze the thermal conductivity for a well-known semiconductor. 
-Go to Examples/MgO. 
-
-Create a folder and copy all the input files there. 
-Perform the calculation using:
+Create a new folder and copy all the input files there.
+Perform the calculation using the following command:
 
 ```
 mpirun thermal_conductivity -qg 12 12 12 
@@ -340,7 +338,7 @@ By default, TDEP uses the isotope natural distribution.(tabulated in the code, t
 ...
 ```
 
-Now repeat the calculation in a different folder with for the case of pure MgO by using:
+Now repeat the calculation in a different folder for the case of pure MgO by using:
 
 ```
 mpirun thermal_conductivity -qg 12 12 12 --noisotope
