@@ -44,7 +44,7 @@ There are three test cases:
 
 
 
-The data provided includes the IFCs and the unitcell obtained from previous calculations. **This data is not meant to produce converged results.**
+The data provided includes the IFCs and the unitcell obtained from previous calculations. **This tutorial is not meant to produce converged results.**
 
 # Before running the tutorial:
 * TDEP installed
