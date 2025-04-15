@@ -360,7 +360,7 @@ Compute the thermal conductivity using different grids, as in the previous examp
 
 #### qg3ph MC grid: speed-up the calculations
 
-You may have notice that TDEP offers the possibility to select Density of q-point mesh for Brillouin zone integration and the dimension of the grid for the threephonon integration through the flag **--qpoint_grid3ph value#1 value#2 value#3**, **-qg3ph value#1 value#2 value#3**.
+You may have noticed that TDEP offers the possibility to select Density of q-point mesh for Brillouin zone integration and the dimension of the grid for the threephonon integration through the flag **--qpoint_grid3ph value#1 value#2 value#3**, **-qg3ph value#1 value#2 value#3**.
 For more details, have a look at the manual: [Monte Carlo integration for the scattering rates](https://tdep-developers.github.io/tdep/program/thermal_conductivity/#monte-carlo-integration-for-the-scattering-rates)
 
 The idea is, we generate a full grid, on which the thermal conductivity will be integrated. A subset of this full grid can then be selected to perform the scattering integration. In order to improve the convergence, these points are not selected entirely at random but using a stratified approach to sample more uniformly the Brillouin zone.
@@ -370,7 +370,7 @@ Converging the grids is an important step to ensure accurate results. Since the 
 ![What is a good value for qg3ph?](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/MgO_convergence_qg3ph.png). 
 
 # Post-processing options
-So far we see how to extract the thermal conductivity tensor using TDEP routine.  Let's have a look at the other output files in may find in the working directory. In case your calculations are not finished yet, you can use the output file provided in the MgO directory, using a q-grid of 28x28x28 points and using a temperature of 300K. 
+So far we have seen how to extract the thermal conductivity tensor using TDEP routine.  Let's have a look at the other output files you may find in the working directory. In case your calculations are not finished yet, you can use the output file provided in the MgO directory, using a q-grid of 28x28x28 points and using a temperature of 300K. 
 
 *outfile.cumulative_thermal_conductivity.hdf5*
 
@@ -453,7 +453,7 @@ The script should give you the plots reported below.
 
 # Convergence of thermal conductivity 
 
-So far we consider converged the forces used for the thermal conductivity. As for the other physical quantities, the thermal conductivity needs to be tested against all the parameters used in the calculations. In particular:
+As for the other physical quantities, the thermal conductivity needs to be tested against all the parameters used in the calculations. In particular:
 
 * supercell size
 * number of configurations used
