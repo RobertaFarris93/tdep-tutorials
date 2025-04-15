@@ -464,37 +464,20 @@ So far we consider converged the forces used for the thermal conductivity. As fo
 
 ## Supercell size convergence
 
-you can test the size of the supercells used by following the steps explained in Tutorial 01 for the case of MgO.
+you can test the size of the supercells used by following the steps explained in [Tutorial 02 Sampling](https://github.com/tdep-developers/tdep-tutorials/blob/main/02_sampling/sTDEP/01_MgO/README.md).
 
 
 ## Self-consistent loop
 
-In order to converge the thermal conductivity, we should test it against the sampling in a iterative way. For doing that, we should repeat the steps explained in the Tutorial 01 Sampling and test the goodness of our fit for the desired property, in this case the thermal conductivity (sTDEP scheme). 
+In order to converge the thermal conductivity, we should test it against the sampling in a iterative way. For doing that, we should repeat the steps explained in the  [Tutorial 02 Sampling](https://github.com/tdep-developers/tdep-tutorials/blob/main/02_sampling/sTDEP/01_MgO/README.md) and test the goodness of our fit for the desired property, in this case the thermal conductivity (sTDEP scheme). 
 [Example of MgO for sampling](https://github.com/tdep-developers/tdep-tutorials/blob/main/02_sampling/sTDEP/01_MgO/README.md)
 
 To do so, with the data provided in the folder ``convergence_tests/input_MgO/``` we can:
 
-
-* Create a set of canonical configurations using:
-  ```
-  canonical_configuration --temperature 300 --quantum -n 4 --maximum_frequency 20 --output_format 4
-   ```
-  Here, we are using an initial set of IFCs in order to create a set of configurations, in case you want to start from scratch without an initial set of forceconstants, you can use two flags ```--debye_temperature ``` and  ``` --maximum_frequency```. For the details, read the documentation on the [canonical_configuration](https://tdep-developers.github.io/tdep/program/canonical_configuration/) .
- 
-
-* Compute the atomic forces using a DFT code of your choice.
-  
-  **Tip**: in order to avoid this step, that could require a significant amount of time, we provided a potential for MgO. You can download that from the first Tutorial. Create a folder "iter0" and copy your input files and the potential there.
-
-
-    * perform a self-consistent loop as described in [Tutorial 1](https://github.com/tdep-developers/tdep-tutorials/tree/main/01_sampling) for MgO for 10 iterations
-    * compute thermal conductivity at each step:
-          ```
-          mpirun thermal_conductivity -qg 8 8 8
-          ```
-    * study the convergence
-      
-![Here an example of the thermal conductivity convergence.](https://github.com/RobertaFarris93/tdep-tutorials/blob/thermal_conductivity/04_thermal_conductivity/Plots/MgO_SC.png)
+Remember to extract the 3-order IFCs, needed for calculating the thermal conductivity:
+```
+mpirun extract_forceconstants  -rc2 8 -rc3 4
+```
  
 **How many steps did you need to reach convergence?**
 
