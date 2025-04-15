@@ -469,7 +469,7 @@ you can test the size of the supercells used by following the steps explained in
 
 ## Self-consistent loop
 
-In order to converge the thermal conductivity, we should test it against the sampling in a iterative way. For doing that, we should repeat the steps explained in the Tutorial 02 Sampling and test the goodness of our fit for the desired property, in this case the thermal conductivity (sTDEP scheme). 
+In order to converge the thermal conductivity, we should test it against the sampling in a iterative way. For doing that, we should repeat the steps explained in the Tutorial 01 Sampling and test the goodness of our fit for the desired property, in this case the thermal conductivity (sTDEP scheme). 
 [Example of MgO for sampling](https://github.com/tdep-developers/tdep-tutorials/blob/main/02_sampling/sTDEP/01_MgO/README.md)
 
 To do so, with the data provided in the folder ``convergence_tests/input_MgO/``` we can:
@@ -480,12 +480,7 @@ To do so, with the data provided in the folder ``convergence_tests/input_MgO/```
   canonical_configuration --temperature 300 --quantum -n 4 --maximum_frequency 20 --output_format 4
    ```
   Here, we are using an initial set of IFCs in order to create a set of configurations, in case you want to start from scratch without an initial set of forceconstants, you can use two flags ```--debye_temperature ``` and  ``` --maximum_frequency```. For the details, read the documentation on the [canonical_configuration](https://tdep-developers.github.io/tdep/program/canonical_configuration/) .
-  
-  You should see now four configurations in your folder: `
-  
-  ```contcar_conf0001```
-  
-  ```contcar_conf0002```
+ 
 
 * Compute the atomic forces using a DFT code of your choice.
   
