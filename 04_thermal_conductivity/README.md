@@ -250,8 +250,6 @@ Get familiar with the optional flags available for thermal conductivity.
 * Perform the same calculation using different grids of q-points
 * Plot the thermal conductivity as a function of 1/q
 
-What is a good grid for the thermal conductivity of Al? 
-
 The calculation of thermal conductivity, being an integrated quantity, requires its evaluation under the assumption of an infinitely refined q-point grid. Unfortunately, this is impossible from a computational point of view, but using progressively finer grids, the behavior of thermal conductivity should scale linearly with q. Thus, in order to converge the thermal conductivity value, we could perform the calculation for a set of q-grids and then study the convergence by plotting the thermal conductivity against 1/q and extrapolating the value for 1/q at 0.  The point of intersection on the y-axis resulting from this regression corresponds to the thermal conductivity within the hypothetical context of an infinitely dense q-point grid. 
 For more details, see [Esfarjani, K. et. al., Phys. Rev. B 84, 085204 (2011)](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.84.085204).
 
@@ -472,9 +470,7 @@ you can test the size of the supercells used by following the steps explained in
 In order to converge the thermal conductivity, we should test it against the sampling in a iterative way. For doing that, we should repeat the steps explained in the  [Tutorial 02 Sampling](https://github.com/tdep-developers/tdep-tutorials/blob/main/02_sampling/sTDEP/01_MgO/README.md) and test the goodness of our fit for the desired property, in this case the thermal conductivity (sTDEP scheme). 
 [Example of MgO for sampling](https://github.com/tdep-developers/tdep-tutorials/blob/main/02_sampling/sTDEP/01_MgO/README.md)
 
-To do so, with the data provided in the folder ``convergence_tests/input_MgO/``` we can:
-
-Remember to extract the 3-order IFCs, needed for calculating the thermal conductivity:
+Remember to extract the 3-order IFCs, needed for calculating the thermal conductivity, at each step:
 ```
 mpirun extract_forceconstants  -rc2 8 -rc3 4
 ```
@@ -494,7 +490,7 @@ Now, repeat the same steps, but this time keep rc2 fixed and change rc3, the cut
 To get started, use the following command:
 
 ```
-mpirun extract_forceconstants  -rc2 8 -rc3 4
+mpirun extract_forceconstants  -rc2 8 -rc3 xx
 ```
 
 Explore how changing rc3 influences the results and assess the convergence of the thermal conductivity or other properties of interest.
