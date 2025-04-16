@@ -28,7 +28,7 @@ Please install the following repositories in this order:
 - Go to the tutorials folder (the folder in which you find this README) and `cd` into the `test` directory:
 
   ```bash
-  cd .../tdep-tutorials/00_preparation/gan_potential/test
+  cd .../tdep-tutorials/00_preparation/potential_energy_surfaces/pes_gan/test
   ```
 
 - create a virtual environment and activate it:
@@ -45,8 +45,9 @@ Please install the following repositories in this order:
   ```bash
   pip install https://github.com/sirmarcel/glp/archive/main.zip
   pip install https://github.com/flokno/mlff/archive/v0.2.1.zip
-  pip install https://github.com/flokno/tools.tdep/archive/main.zip
-  pip install https://github.com/flokno/tools.mlff/archive/main.zip
+  pip install https://github.com/flokno/tools.tdep/archive/v0.0.5.zip
+  pip install https://github.com/flokno/tools.mlff/archive/v0.0.2.zip
+  pip install 'numpy<2.0' jax==0.4.13 jaxlib==0.4.13 optax==0.2.0 orbax_checkpoint==0.5.3 --no-dependencies
   ```
 
 ## Test
@@ -58,10 +59,10 @@ You can check your installation for GaN in the folder `pes_gan`, see instruction
 You can predict energy, forces, and stress for a set of structures with the command `sokrates_compute`. For example, the command test in the `pes_gan/test` folder runs the command
 
 ```bash
-sokrates_compute --folder-model ../module/ samples/*/*/*/geometry.in
+sokrates_compute --folder-model ../module/ samples/*/*/*/geometry.in (--format aims)
 ```
 
-which will compute energy, forces, and stress for all samples saved as `geometry.in` files (these could be `POSCAR`, `positions.xyz`', ..., as well), and save them to a dataset `predictions.nc` which is a HDF5 file that can be read easily using , e.g., [`xarray`](https://docs.xarray.dev/en/stable/user-guide/io.html).
+which will compute energy, forces, and stress for all samples saved as `geometry.in` files (these could be `POSCAR`, `positions.xyz`', ..., as well. When you are using a default name that [`ase.io.read`](https://wiki.fysik.dtu.dk/ase/ase/io/io.html#ase.io.read), then you do not need to specify the `--format`), and save them to a dataset `predictions.nc` which is a HDF5 file that can be read easily using , e.g., [`xarray`](https://docs.xarray.dev/en/stable/user-guide/io.html).
 
 `sokrates_compute` can also write TDEP input directly by using the `--tdep` flag.
 
